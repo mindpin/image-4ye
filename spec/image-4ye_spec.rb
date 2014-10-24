@@ -1,18 +1,30 @@
 require "spec_helper"
 
 describe Image4ye do
-  let(:file)    {File.open("./spec/lambda.png")}
+  let(:file)    {File.open("./spec/lambda.png", "rb")}
+  let(:string)  {Base64.encode64 file.read}
   let(:pattern) {"http://img.teamkn.com/i"}
   let(:options) {{height: 100, width: 200, crop: true}}
   let(:url)     {"http://img.teamkn.com/i/NVQtmbKb.png"}
 
-  subject {Image4ye.upload(file)}
-
   describe "::upload" do
-    it {
-      expect(subject).to be_an Image4ye
-      expect(subject.url).to include pattern
-    }
+    context "when input is a File object" do
+      subject {Image4ye.upload(file)}
+
+      it {
+        expect(subject).to be_an Image4ye
+        expect(subject.url).to include pattern
+      }
+    end
+
+    context "when input is a Base64 String" do
+      subject {Image4ye.upload(string)}
+
+      it {
+        expect(subject).to be_an Image4ye
+        expect(subject.url).to include pattern
+      }
+    end
   end
 
   describe "#url" do
